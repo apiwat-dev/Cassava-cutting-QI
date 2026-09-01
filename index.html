@@ -12,7 +12,6 @@
     --leaf:   #4A7C42;
     --leaf-light: #6BA362;
     --stem:   #8B6914;
-    --straw:  #D4B94A;
     --sky:    #EAF3E8;
     --paper:  #F7F5F0;
     --ink:    #1C1A14;
@@ -20,6 +19,7 @@
     --good:   #2E7D32;
     --warn:   #E65100;
     --bad:    #B71C1C;
+    --blue:   #1565C0;
     --radius: 4px;
   }
 
@@ -38,41 +38,74 @@
   header {
     background: var(--soil);
     color: #fff;
-    padding: 28px 32px 24px;
-    display: flex;
-    align-items: flex-end;
-    gap: 20px;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
   }
 
-  .header-icon {
-    width: 52px; height: 52px; flex-shrink: 0;
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-height: 170px;
+  }
+
+  .header-illustration {
+    flex: 0 0 170px;
+    height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--soil);
+  }
+
+  .header-text {
+    padding: 24px 24px 24px 20px;
+    flex: 1;
   }
 
   .header-text h1 {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    letter-spacing: 0.01em;
-    line-height: 1.25;
+    line-height: 1.3;
   }
 
   .header-text p {
     font-size: 0.85rem;
     color: #BFA890;
-    margin-top: 3px;
+    margin-top: 6px;
   }
 
-  /* ── Main layout ── */
+  .btn-criteria {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    color: #fff;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-criteria:hover { background: rgba(255,255,255,0.25); }
+
+  /* ── Main ── */
   main {
     max-width: 640px;
     margin: 0 auto;
-    padding: 32px 20px 60px;
+    padding: 28px 20px 60px;
   }
 
   /* ── Step indicator ── */
   .steps {
     display: flex;
     gap: 0;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
 
   .step-dot {
@@ -94,7 +127,6 @@
     z-index: 0;
   }
   .step-dot:last-child::before { display: none; }
-
   .step-dot.active::before,
   .step-dot.done::before { background: var(--leaf); }
 
@@ -110,13 +142,7 @@
     position: relative; z-index: 1;
     transition: all 0.2s;
   }
-
-  .step-dot.active .dot-circle {
-    background: var(--leaf);
-    border-color: var(--leaf);
-    color: #fff;
-  }
-
+  .step-dot.active .dot-circle,
   .step-dot.done .dot-circle {
     background: var(--leaf);
     border-color: var(--leaf);
@@ -129,47 +155,26 @@
     margin-top: 5px;
     text-align: center;
   }
-
   .step-dot.active .dot-label { color: var(--leaf); font-weight: 600; }
 
   /* ── Card ── */
   .card {
     background: #fff;
     border: 1px solid #E0DBD0;
-    border-radius: 6px;
-    padding: 28px 24px;
-    margin-bottom: 20px;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
   }
 
   .card-title {
     font-size: 1rem;
     font-weight: 700;
     color: var(--soil);
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .card-title .step-badge {
-    background: var(--leaf);
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 20px;
-  }
-
-  .card-desc {
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   /* ── Form ── */
-  .field {
-    margin-bottom: 18px;
-  }
+  .field { margin-bottom: 16px; }
 
   label {
     display: block;
@@ -179,15 +184,11 @@
     color: var(--ink);
   }
 
-  .unit-hint {
-    font-weight: 400;
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
+  .unit-hint { font-weight: 400; color: var(--muted); font-size: 0.8rem; }
 
-  input[type="number"], select {
+  input[type="number"] {
     width: 100%;
-    padding: 10px 14px;
+    padding: 11px 14px;
     border: 1.5px solid #D0C9BC;
     border-radius: var(--radius);
     font-family: 'Sarabun', sans-serif;
@@ -197,19 +198,16 @@
     transition: border-color 0.15s;
     -moz-appearance: textfield;
   }
-
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
-
-  input[type="number"]:focus, select:focus {
+  input[type="number"]:focus {
     outline: none;
     border-color: var(--leaf);
     background: #fff;
   }
 
-  /* circumference → radius hint */
   .derived-hint {
-    margin-top: 6px;
+    margin-top: 5px;
     font-size: 0.78rem;
     color: var(--muted);
     font-family: 'IBM Plex Mono', monospace;
@@ -219,7 +217,7 @@
   .variety-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 
   .variety-btn {
@@ -234,16 +232,13 @@
     transition: all 0.15s;
     color: var(--ink);
   }
-
   .variety-btn:hover { border-color: var(--leaf); background: var(--sky); }
-
   .variety-btn.selected {
     border-color: var(--leaf);
     background: var(--leaf);
     color: #fff;
     font-weight: 600;
   }
-
   .variety-btn .v-sub {
     display: block;
     font-size: 0.72rem;
@@ -251,11 +246,11 @@
     margin-top: 2px;
   }
 
-  /* ── Calculate button ── */
+  /* ── Calc button ── */
   .btn-calc {
     width: 100%;
     padding: 14px;
-    background: var(--soil);
+    background: var(--leaf);
     color: #fff;
     border: none;
     border-radius: var(--radius);
@@ -267,8 +262,7 @@
     transition: background 0.15s;
     letter-spacing: 0.02em;
   }
-
-  .btn-calc:hover { background: #2A1F10; }
+  .btn-calc:hover { background: #3a6234; }
   .btn-calc:disabled { background: #B0A898; cursor: not-allowed; }
 
   /* ── Result ── */
@@ -276,68 +270,58 @@
 
   .result-hero {
     text-align: center;
-    padding: 28px 20px 20px;
-    border-radius: 6px 6px 0 0;
+    padding: 36px 20px 28px;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+  }
+  .result-hero.grade-a { background: var(--good); color: #fff; }
+  .result-hero.grade-b { background: var(--blue); color: #fff; }
+  .result-hero.grade-d { background: var(--bad);  color: #fff; }
+
+  .result-hero-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    line-height: 1;
   }
 
-  .result-hero.grade-a { background: var(--good); color: #fff; }
-  .result-hero.grade-b { background: #1565C0; color: #fff; }
-  .result-hero.grade-c { background: var(--warn); color: #fff; }
-  .result-hero.grade-d { background: var(--bad); color: #fff; }
-
   .result-label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    opacity: 0.85;
+    letter-spacing: 0.1em;
+    opacity: 0.8;
     text-transform: uppercase;
     margin-bottom: 8px;
   }
 
   .result-vd {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 3.5rem;
+    font-size: 3.8rem;
     font-weight: 600;
     line-height: 1;
   }
 
-  .result-unit {
-    font-size: 1.1rem;
-    opacity: 0.8;
-    margin-left: 4px;
-  }
+  .result-unit { font-size: 1rem; opacity: 0.75; margin-left: 4px; }
 
   .result-grade-name {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    margin-top: 10px;
+    margin-top: 12px;
+    opacity: 0.95;
   }
 
   .result-body {
+    background: #fff;
     border: 1px solid #E0DBD0;
     border-top: none;
-    border-radius: 0 0 6px 6px;
-    padding: 22px;
+    border-radius: 0 0 8px 8px;
+    padding: 24px;
   }
 
   .result-action {
     font-size: 0.95rem;
     color: var(--ink);
-    margin-bottom: 18px;
-    line-height: 1.7;
+    line-height: 1.75;
   }
-
-  .calc-breakdown {
-    background: var(--sky);
-    border-radius: 4px;
-    padding: 14px 16px;
-    font-size: 0.8rem;
-    font-family: 'IBM Plex Mono', monospace;
-    color: var(--soil);
-    line-height: 1.9;
-  }
-
-  .calc-breakdown strong { color: var(--ink); }
 
   .btn-reset {
     width: 100%;
@@ -350,86 +334,167 @@
     font-weight: 600;
     color: var(--soil);
     cursor: pointer;
-    margin-top: 18px;
+    margin-top: 20px;
     transition: all 0.15s;
   }
-
   .btn-reset:hover { background: var(--soil); color: #fff; }
 
-  /* ── Formula box ── */
-  .formula-box {
-    border: 1px dashed #C8C0B0;
-    border-radius: 4px;
-    padding: 14px 16px;
-    background: var(--sky);
-    margin-bottom: 20px;
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 640px;
+    padding: 0 0 32px;
+    animation: slideUp 0.25s ease;
+    max-height: 85vh;
+    overflow-y: auto;
   }
 
-  .formula-box p {
-    font-size: 0.78rem;
-    color: var(--muted);
-    margin-bottom: 6px;
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
   }
 
-  .formula-box .eq {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.82rem;
-    color: var(--soil);
-    line-height: 1.6;
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: #D0C9BC;
+    border-radius: 2px;
+    margin: 12px auto 0;
   }
 
-  /* ── Grade legend v2 ── */
-  .grade-legend-v2 {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 14px;
-  }
-
-  .grade-row {
+  .modal-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    border-radius: 6px;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #E0DBD0;
   }
 
-  .grade-row--good { background: #E8F5E9; border-left: 4px solid var(--good); }
-  .grade-row--high { background: #E3F2FD; border-left: 4px solid #1565C0; }
-  .grade-row--bad  { background: #FFEBEE; border-left: 4px solid var(--bad); }
+  .modal-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--soil);
+  }
 
-  .grade-icon { font-size: 1.8rem; flex-shrink: 0; line-height: 1; }
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+  }
+  .modal-close:hover { background: #E0DBD0; }
 
-  .grade-text { display: flex; flex-direction: column; gap: 2px; }
-  .grade-text strong { font-size: 0.9rem; color: var(--ink); }
-  .grade-text span   { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+  .modal-body { padding: 20px 24px; }
+
+  /* ── Grade rows in modal ── */
+  .grade-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .grade-row--good { background: #E8F5E9; border-left: 4px solid var(--good); border-radius: 0 8px 8px 0; }
+  .grade-row--high { background: #E3F2FD; border-left: 4px solid var(--blue); border-radius: 0 8px 8px 0; }
+  .grade-row--bad  { background: #FFEBEE; border-left: 4px solid var(--bad);  border-radius: 0 8px 8px 0; }
+
+  .grade-icon { font-size: 2rem; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+
+  .grade-text strong { display: block; font-size: 0.95rem; color: var(--ink); margin-bottom: 3px; }
+  .grade-text span   { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── Illustration card ── */
+  .illus-card {
+    background: linear-gradient(135deg, var(--sky) 0%, #fff 100%);
+    border: 1px solid #D4E8D0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .illus-steps {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  .illus-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 60px;
+  }
+
+  .illus-step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--leaf);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .illus-step-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.3;
+  }
 
   @media (max-width: 480px) {
-    header { padding: 20px 16px; }
+    header { font-size: 0.9rem; }
+    .header-illustration { flex: 0 0 110px; height: 110px; }
+    .header-text h1 { font-size: 1.05rem; }
     main { padding: 20px 12px 48px; }
-    .card { padding: 20px 16px; }
-    .result-vd { font-size: 2.8rem; }
+    .card { padding: 18px 16px; }
+    .result-vd { font-size: 3rem; }
     .variety-grid { grid-template-columns: 1fr; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
+    * { transition: none !important; animation: none !important; }
   }
 </style>
 </head>
 <body>
 
+<!-- ── Header ── -->
 <header>
-  <svg class="header-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- simplified cassava stem icon -->
-    <rect x="22" y="4" width="8" height="44" rx="4" fill="#8B6914"/>
-    <ellipse cx="26" cy="14" rx="12" ry="5" fill="#4A7C42" opacity="0.9"/>
-    <ellipse cx="26" cy="26" rx="10" ry="4.5" fill="#4A7C42" opacity="0.7"/>
-    <ellipse cx="26" cy="37" rx="8" ry="4" fill="#4A7C42" opacity="0.5"/>
-  </svg>
-  <div class="header-text">
-    <h1>ประเมินคุณภาพท่อนพันธุ์มันสำปะหลังก่อนปลูก</h1>
-    <p>วัดง่ายแค่ปลายนิ้ว มั่นใจก่อนเลือกท่อนพันธุ์</p>
+  <div class="header-inner">
+    <div class="header-illustration">
+      <img src="data:image/png;base64,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" width="155" height="155" alt="โลโก้ท่อนพันธุ์มันสำปะหลัง" style="object-fit:contain;">
+    </div>
+    <div class="header-text">
+      <h1>ประเมินคุณภาพท่อนพันธุ์<br>มันสำปะหลังก่อนปลูก</h1>
+      <p>วัดง่ายแค่ปลายนิ้ว มั่นใจก่อนเลือกท่อนพันธุ์</p>
+      <button class="btn-criteria" onclick="openModal()">
+        ดูเกณฑ์การประเมิน ›
+      </button>
+    </div>
   </div>
 </header>
 
@@ -459,84 +524,104 @@
     </div>
   </div>
 
+
   <!-- Form card -->
   <div class="card" id="formCard">
-    <div class="card-title">
-      กรอกข้อมูลท่อนพันธุ์
-    </div>
-    <p class="card-desc">วัดและกรอกค่าทั้ง 4 รายการให้ครบก่อนกดคำนวณ</p>
+    <div class="card-title">กรอกข้อมูลท่อนพันธุ์</div>
 
-    <!-- Step 1: Weight -->
     <div class="field">
       <label>
-        <span class="step-badge" style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">1</span>
+        <span style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">1</span>
         น้ำหนักท่อนพันธุ์ <span class="unit-hint">(กรัม)</span>
       </label>
       <input type="number" id="mass" min="0" step="0.1" placeholder="เช่น 250.5" oninput="updateSteps()">
     </div>
 
-    <!-- Step 2: Circumference (mid only) -->
     <div class="field">
       <label>
-        <span class="step-badge" style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">2</span>
+        <span style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">2</span>
         เส้นรอบวงบริเวณกลางท่อน <span class="unit-hint">(ซม.)</span>
       </label>
       <input type="number" id="circ_mid" min="0" step="0.1" placeholder="วัดตรงกลางท่อนพันธุ์" oninput="updateDerived(); updateSteps()">
       <div class="derived-hint" id="hint_rm"></div>
     </div>
 
-    <!-- Step 3: Length -->
     <div class="field">
       <label>
-        <span class="step-badge" style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">3</span>
+        <span style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">3</span>
         ความยาวท่อนพันธุ์ <span class="unit-hint">(ซม.)</span>
       </label>
       <input type="number" id="length" min="0" step="0.1" placeholder="เช่น 25" oninput="updateSteps()">
     </div>
 
-    <!-- Step 4: Variety -->
     <div class="field">
       <label>
-        <span class="step-badge" style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">4</span>
+        <span style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">4</span>
         เลือกพันธุ์
       </label>
       <div class="variety-grid">
-        <button class="variety-btn" onclick="selectVariety(this, 'เกษตรศาสตร์ 50')">
-          เกษตรศาสตร์ 50<span class="v-sub">KU50</span>
-        </button>
-        <button class="variety-btn" onclick="selectVariety(this, 'ห้านาที')">
-          ห้านาที<span class="v-sub">Ha Nathi</span>
-        </button>
-        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 72')">
-          ระยอง 72<span class="v-sub">Rayong 72</span>
-        </button>
-        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 5')">
-          ระยอง 5<span class="v-sub">Rayong 5</span>
-        </button>
-        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 9')">
-          ระยอง 9<span class="v-sub">Rayong 9</span>
-        </button>
-        <button class="variety-btn" onclick="selectVariety(this, 'พิรุณ 4')">
-          พิรุณ 4<span class="v-sub">Phirun 4</span>
-        </button>
+        <button class="variety-btn" onclick="selectVariety(this, 'เกษตรศาสตร์ 50')">เกษตรศาสตร์ 50<span class="v-sub">KU50</span></button>
+        <button class="variety-btn" onclick="selectVariety(this, 'ห้านาที')">ห้านาที<span class="v-sub">Ha Nathi</span></button>
+        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 72')">ระยอง 72<span class="v-sub">Rayong 72</span></button>
+        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 5')">ระยอง 5<span class="v-sub">Rayong 5</span></button>
+        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 9')">ระยอง 9<span class="v-sub">Rayong 9</span></button>
+        <button class="variety-btn" onclick="selectVariety(this, 'พิรุณ 4')">พิรุณ 4<span class="v-sub">Phirun 4</span></button>
       </div>
     </div>
 
-    <button class="btn-calc" id="calcBtn" onclick="calculate()" disabled>
-      คำนวณค่า VD
-    </button>
+    <button class="btn-calc" id="calcBtn" onclick="calculate()" disabled>คำนวณค่า VD</button>
   </div>
 
-  <!-- Grade legend -->
-  <div class="card" id="legendCard">
-    <div class="card-title">เกณฑ์การประเมินคุณภาพท่อนพันธุ์</div>
-    <div class="grade-legend-v2">
+</main>
+
+<!-- Result section -->
+<div id="result">
+  <div class="result-hero" id="resultHero">
+    <!-- Gauge SVG -->
+    <div style="display:flex;justify-content:center;margin-bottom:4px;">
+      <svg id="gaugeSvg" width="240" height="136" viewBox="0 0 240 136">
+        <!-- track arc: red zone < 0.60 -->
+        <path id="arcBad"  d="" stroke="#B71C1C" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.35"/>
+        <!-- track arc: good zone 0.60-0.89 -->
+        <path id="arcGood" d="" stroke="#2E7D32" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.35"/>
+        <!-- track arc: high zone > 0.89 -->
+        <path id="arcHigh" d="" stroke="#1565C0" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.35"/>
+        <!-- active fill arc -->
+        <path id="arcFill" d="" stroke="#fff" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+        <!-- needle -->
+        <line id="gaugeNeedle" x1="120" y1="120" x2="120" y2="40" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="120" cy="120" r="6" fill="#fff" opacity="0.9"/>
+        <!-- zone labels -->
+        <text x="22"  y="120" text-anchor="middle" font-size="9" fill="#fff" opacity="0.7" font-family="sans-serif">&lt;0.60</text>
+        <text x="120" y="18"  text-anchor="middle" font-size="9" fill="#fff" opacity="0.7" font-family="sans-serif">0.60–0.89</text>
+        <text x="218" y="120" text-anchor="middle" font-size="9" fill="#fff" opacity="0.7" font-family="sans-serif">&gt;0.89</text>
+      </svg>
+    </div>
+    <div class="result-label">ค่าความหนาแน่นปริมาตร (VD)</div>
+    <div class="result-vd" id="resultVD">0.000<span class="result-unit"> g/cm³</span></div>
+    <div class="result-grade-name" id="resultGrade">–</div>
+  </div>
+  <div class="result-body" style="max-width:640px;margin:0 auto;">
+    <div class="result-action" id="resultAction"></div>
+    <button class="btn-reset" onclick="resetForm()">ประเมินท่อนพันธุ์ใหม่</button>
+  </div>
+</div>
+
+<!-- Modal: เกณฑ์การประเมิน -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <h2>เกณฑ์การประเมินคุณภาพท่อนพันธุ์</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
 
       <div class="grade-row grade-row--good">
         <div class="grade-icon">🌱</div>
         <div class="grade-text">
           <strong>คุณภาพดีมาก — ใช้ได้เลย</strong>
-          <span>งอกดี โตสม่ำเสมอทั้งแปลง</span>
+          <span>ค่า VD อยู่ในช่วง 0.60–0.89 g/cm³<br>งอกดี โตสม่ำเสมอทั้งแปลง</span>
         </div>
       </div>
 
@@ -544,7 +629,7 @@
         <div class="grade-icon">💪</div>
         <div class="grade-text">
           <strong>คุณภาพดี — ใช้ได้</strong>
-          <span>ต้นจะโตสวยทั่วทั้งแปลง แต่ต้องบำรุงเพิ่มขึ้นนิดนึง</span>
+          <span>ค่า VD มากกว่า 0.89 g/cm³<br>ต้นโตสวยทั่วแปลง แต่ต้องบำรุงเพิ่มขึ้นนิดนึง</span>
         </div>
       </div>
 
@@ -552,31 +637,30 @@
         <div class="grade-icon">⚠️</div>
         <div class="grade-text">
           <strong>คุณภาพไม่ดี — ไม่แนะนำ</strong>
-          <span>งอกช้า โตช้า ผลผลิตไม่สม่ำเสมอ</span>
+          <span>ค่า VD น้อยกว่า 0.60 g/cm³<br>งอกช้า โตช้า ผลผลิตไม่สม่ำเสมอ</span>
         </div>
       </div>
 
     </div>
   </div>
-
-</main>
-
-<!-- Result section (replaces form) -->
-<div id="result">
-  <div class="result-hero" id="resultHero">
-    <div class="result-label">ค่าความหนาแน่นปริมาตร (VD)</div>
-    <div class="result-vd" id="resultVD">0.00<span class="result-unit">g/cm³</span></div>
-    <div class="result-grade-name" id="resultGrade">–</div>
-  </div>
-  <div class="result-body">
-    <div class="result-action" id="resultAction"></div>
-    <div class="calc-breakdown" id="calcBreakdown"></div>
-    <button class="btn-reset" onclick="resetForm()">ประเมินท่อนพันธุ์ใหม่</button>
-  </div>
 </div>
 
 <script>
   let selectedVariety = '';
+
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
 
   function selectVariety(btn, name) {
     document.querySelectorAll('.variety-btn').forEach(b => b.classList.remove('selected'));
@@ -588,11 +672,7 @@
   function updateDerived() {
     const cm = parseFloat(document.getElementById('circ_mid').value);
     const hm = document.getElementById('hint_rm');
-    if (!isNaN(cm) && cm > 0) {
-      hm.textContent = `→ r_mid = ${(cm / (2 * Math.PI)).toFixed(3)} ซม.`;
-    } else {
-      hm.textContent = '';
-    }
+    hm.textContent = (!isNaN(cm) && cm > 0) ? `→ r = ${(cm / (2 * Math.PI)).toFixed(3)} ซม.` : '';
   }
 
   function allFilled() {
@@ -618,8 +698,52 @@
     mark(2, !isNaN(cm) && cm > 0);
     mark(3, !isNaN(L) && L > 0);
     mark(4, selectedVariety !== '');
-
     document.getElementById('calcBtn').disabled = !allFilled();
+  }
+
+  // ── Gauge drawing ──
+  function polarToXY(cx, cy, r, angleDeg) {
+    const rad = (angleDeg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  function arcPath(cx, cy, r, startDeg, endDeg) {
+    const s = polarToXY(cx, cy, r, startDeg);
+    const e = polarToXY(cx, cy, r, endDeg);
+    const large = (endDeg - startDeg) > 180 ? 1 : 0;
+    return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 1 ${e.x} ${e.y}`;
+  }
+
+  function drawGauge(VD) {
+    const cx = 120, cy = 120, r = 88;
+    const startDeg = -160, endDeg = -20; // total sweep = 140°
+    const totalSweep = endDeg - startDeg; // 140
+
+    // Zone boundaries in VD: 0–0.60 bad, 0.60–0.89 good, 0.89–1.5 high
+    // Map VD 0–1.5 → angle
+    const minVD = 0, maxVD = 1.5;
+    function vdToAngle(v) {
+      const clamped = Math.min(Math.max(v, minVD), maxVD);
+      return startDeg + ((clamped - minVD) / (maxVD - minVD)) * totalSweep;
+    }
+
+    const badEnd   = vdToAngle(0.60);
+    const goodEnd  = vdToAngle(0.89);
+    const trackEnd = endDeg;
+
+    document.getElementById('arcBad').setAttribute('d',  arcPath(cx, cy, r, startDeg, badEnd));
+    document.getElementById('arcGood').setAttribute('d', arcPath(cx, cy, r, badEnd, goodEnd));
+    document.getElementById('arcHigh').setAttribute('d', arcPath(cx, cy, r, goodEnd, trackEnd));
+
+    const needleAngle = vdToAngle(VD);
+    const fillD = arcPath(cx, cy, r, startDeg, needleAngle);
+    document.getElementById('arcFill').setAttribute('d', fillD);
+
+    // needle line
+    const tip = polarToXY(cx, cy, r - 20, needleAngle);
+    const needle = document.getElementById('gaugeNeedle');
+    needle.setAttribute('x2', tip.x);
+    needle.setAttribute('y2', tip.y);
   }
 
   function calculate() {
@@ -628,35 +752,28 @@
     const L  = parseFloat(document.getElementById('length').value);
     const variety = selectedVariety;
 
-    // Convert circumference → radius (cm)
     const rm = cm / (2 * Math.PI);
-
-    // Volume of cylinder (cm³)
-    const V = Math.PI * rm * rm * L;
-
-    // VD = mass(g) / volume(cm³)
+    const V  = Math.PI * rm * rm * L;
     const VD = m / V;
 
-    // Grade — 3 tiers
-    let gradeClass, gradeName, action;
+    let gradeClass, gradeName, icon, action;
     if (VD >= 0.60 && VD <= 0.89) {
-      gradeClass = 'grade-a';
-      gradeName  = '🌱 คุณภาพดีมาก — ใช้ได้เลย';
+      gradeClass = 'grade-a'; icon = '🌱';
+      gradeName  = 'คุณภาพดีมาก — ใช้ได้เลย';
       action = `<strong>ท่อนพันธุ์ ${variety} คุณภาพดีมาก</strong><br><br>✅ งอกดี โตสม่ำเสมอทั้งแปลง นำไปปลูกได้ทันที`;
     } else if (VD > 0.89) {
-      gradeClass = 'grade-b';
-      gradeName  = '💪 คุณภาพดี — ใช้ได้';
-      action = `<strong>ท่อนพันธุ์ ${variety} คุณภาพดี</strong><br><br>✅ ใช้ได้ ต้นจะโตสวยทั่วทั้งแปลง แต่ต้องบำรุงเพิ่มขึ้นนิดนึง`;
+      gradeClass = 'grade-b'; icon = '💪';
+      gradeName  = 'คุณภาพดี — ใช้ได้';
+      action = `<strong>ท่อนพันธุ์ ${variety} คุณภาพดี</strong><br><br>✅ ต้นโตสวยทั่วทั้งแปลง แต่ต้องบำรุงเพิ่มขึ้นนิดนึง`;
     } else {
-      gradeClass = 'grade-d';
-      gradeName  = '⚠️ คุณภาพไม่ดี — ไม่แนะนำ';
+      gradeClass = 'grade-d'; icon = '⚠️';
+      gradeName  = 'คุณภาพไม่ดี — ไม่แนะนำ';
       action = `<strong>ท่อนพันธุ์ ${variety} คุณภาพไม่ดี</strong><br><br>❌ งอกช้า โตช้า ผลผลิตไม่สม่ำเสมอ ควรคัดทิ้งและเลือกท่อนพันธุ์ใหม่`;
     }
 
-    // Show result
     document.getElementById('formCard').style.display = 'none';
-    document.getElementById('legendCard').style.display = 'none';
     document.getElementById('stepIndicator').style.display = 'none';
+    document.querySelector('main').style.padding = '0';
 
     const resultEl = document.getElementById('result');
     resultEl.style.display = 'block';
@@ -666,16 +783,7 @@
     document.getElementById('resultHero').className = `result-hero ${gradeClass}`;
     document.getElementById('resultAction').innerHTML = action;
 
-    document.getElementById('calcBreakdown').innerHTML =
-      `<strong>รายละเอียดการคำนวณ</strong>\n` +
-      `พันธุ์        : ${variety}\n` +
-      `น้ำหนัก (m)   : ${m.toFixed(2)} g\n` +
-      `C_mid         : ${cm.toFixed(2)} cm  →  r_mid = ${rm.toFixed(4)} cm\n` +
-      `ความยาว (L)   : ${L.toFixed(2)} cm\n` +
-      `V = π × r²_mid × L\n` +
-      `V = π × ${rm.toFixed(4)}² × ${L.toFixed(2)} = ${V.toFixed(4)} cm³\n` +
-      `VD = ${m.toFixed(2)} / ${V.toFixed(4)} = <strong>${VD.toFixed(3)} g/cm³</strong>`;
-
+    drawGauge(VD);
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -694,8 +802,8 @@
 
     document.getElementById('result').style.display = 'none';
     document.getElementById('formCard').style.display = 'block';
-    document.getElementById('legendCard').style.display = 'block';
     document.getElementById('stepIndicator').style.display = 'flex';
+    document.querySelector('main').style.padding = '';
     document.getElementById('calcBtn').disabled = true;
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
