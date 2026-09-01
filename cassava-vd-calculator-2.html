@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ประเมินคุณภาพท่อนพันธุ์มันสำปะหลังก่อนปลูก</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+  :root {
+    --soil:   #3B2F1E;
+    --leaf:   #4A7C42;
+    --leaf-light: #6BA362;
+    --stem:   #8B6914;
+    --straw:  #D4B94A;
+    --sky:    #EAF3E8;
+    --paper:  #F7F5F0;
+    --ink:    #1C1A14;
+    --muted:  #7A7060;
+    --good:   #2E7D32;
+    --warn:   #E65100;
+    --bad:    #B71C1C;
+    --radius: 4px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--soil);
+    color: #fff;
+    padding: 28px 32px 24px;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  .header-icon {
+    width: 52px; height: 52px; flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+  }
+
+  .header-text p {
+    font-size: 0.85rem;
+    color: #BFA890;
+    margin-top: 3px;
+  }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  /* ── Step indicator ── */
+  .steps {
+    display: flex;
+    gap: 0;
+    margin-bottom: 32px;
+  }
+
+  .step-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+  }
+
+  .step-dot::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: #D9D4C8;
+    z-index: 0;
+  }
+  .step-dot:last-child::before { display: none; }
+
+  .step-dot.active::before,
+  .step-dot.done::before { background: var(--leaf); }
+
+  .dot-circle {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #D9D4C8;
+    border: 2px solid #D9D4C8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    position: relative; z-index: 1;
+    transition: all 0.2s;
+  }
+
+  .step-dot.active .dot-circle {
+    background: var(--leaf);
+    border-color: var(--leaf);
+    color: #fff;
+  }
+
+  .step-dot.done .dot-circle {
+    background: var(--leaf);
+    border-color: var(--leaf);
+    color: #fff;
+  }
+
+  .dot-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 5px;
+    text-align: center;
+  }
+
+  .step-dot.active .dot-label { color: var(--leaf); font-weight: 600; }
+
+  /* ── Card ── */
+  .card {
+    background: #fff;
+    border: 1px solid #E0DBD0;
+    border-radius: 6px;
+    padding: 28px 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--soil);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .step-badge {
+    background: var(--leaf);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  .card-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  /* ── Form ── */
+  .field {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+
+  .unit-hint {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #D0C9BC;
+    border-radius: var(--radius);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 1rem;
+    background: var(--paper);
+    color: var(--ink);
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: var(--leaf);
+    background: #fff;
+  }
+
+  /* circumference → radius hint */
+  .derived-hint {
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ── Variety grid ── */
+  .variety-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .variety-btn {
+    padding: 10px 12px;
+    border: 1.5px solid #D0C9BC;
+    border-radius: var(--radius);
+    background: var(--paper);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    color: var(--ink);
+  }
+
+  .variety-btn:hover { border-color: var(--leaf); background: var(--sky); }
+
+  .variety-btn.selected {
+    border-color: var(--leaf);
+    background: var(--leaf);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .variety-btn .v-sub {
+    display: block;
+    font-size: 0.72rem;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+
+  /* ── Calculate button ── */
+  .btn-calc {
+    width: 100%;
+    padding: 14px;
+    background: var(--soil);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-calc:hover { background: #2A1F10; }
+  .btn-calc:disabled { background: #B0A898; cursor: not-allowed; }
+
+  /* ── Result ── */
+  #result { display: none; }
+
+  .result-hero {
+    text-align: center;
+    padding: 28px 20px 20px;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .result-hero.grade-a { background: var(--good); color: #fff; }
+  .result-hero.grade-b { background: #1565C0; color: #fff; }
+  .result-hero.grade-c { background: var(--warn); color: #fff; }
+  .result-hero.grade-d { background: var(--bad); color: #fff; }
+
+  .result-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .result-vd {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 3.5rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .result-unit {
+    font-size: 1.1rem;
+    opacity: 0.8;
+    margin-left: 4px;
+  }
+
+  .result-grade-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+
+  .result-body {
+    border: 1px solid #E0DBD0;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    padding: 22px;
+  }
+
+  .result-action {
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+
+  .calc-breakdown {
+    background: var(--sky);
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--soil);
+    line-height: 1.9;
+  }
+
+  .calc-breakdown strong { color: var(--ink); }
+
+  .btn-reset {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1.5px solid var(--soil);
+    border-radius: var(--radius);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--soil);
+    cursor: pointer;
+    margin-top: 18px;
+    transition: all 0.15s;
+  }
+
+  .btn-reset:hover { background: var(--soil); color: #fff; }
+
+  /* ── Formula box ── */
+  .formula-box {
+    border: 1px dashed #C8C0B0;
+    border-radius: 4px;
+    padding: 14px 16px;
+    background: var(--sky);
+    margin-bottom: 20px;
+  }
+
+  .formula-box p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .formula-box .eq {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--soil);
+    line-height: 1.6;
+  }
+
+  /* ── Grade legend v2 ── */
+  .grade-legend-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .grade-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 6px;
+  }
+
+  .grade-row--good { background: #E8F5E9; border-left: 4px solid var(--good); }
+  .grade-row--high { background: #E3F2FD; border-left: 4px solid #1565C0; }
+  .grade-row--bad  { background: #FFEBEE; border-left: 4px solid var(--bad); }
+
+  .grade-icon { font-size: 1.8rem; flex-shrink: 0; line-height: 1; }
+
+  .grade-text { display: flex; flex-direction: column; gap: 2px; }
+  .grade-text strong { font-size: 0.9rem; color: var(--ink); }
+  .grade-text span   { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+
+  @media (max-width: 480px) {
+    header { padding: 20px 16px; }
+    main { padding: 20px 12px 48px; }
+    .card { padding: 20px 16px; }
+    .result-vd { font-size: 2.8rem; }
+    .variety-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <svg class="header-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- simplified cassava stem icon -->
+    <rect x="22" y="4" width="8" height="44" rx="4" fill="#8B6914"/>
+    <ellipse cx="26" cy="14" rx="12" ry="5" fill="#4A7C42" opacity="0.9"/>
+    <ellipse cx="26" cy="26" rx="10" ry="4.5" fill="#4A7C42" opacity="0.7"/>
+    <ellipse cx="26" cy="37" rx="8" ry="4" fill="#4A7C42" opacity="0.5"/>
+  </svg>
+  <div class="header-text">
+    <h1>ประเมินคุณภาพท่อนพันธุ์มันสำปะหลังก่อนปลูก</h1>
+    <p>วัดง่ายแค่ปลายนิ้ว มั่นใจก่อนเลือกท่อนพันธุ์</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- Step indicator -->
+  <div class="steps" id="stepIndicator">
+    <div class="step-dot active" data-step="1">
+      <div class="dot-circle">1</div>
+      <div class="dot-label">น้ำหนัก</div>
+    </div>
+    <div class="step-dot" data-step="2">
+      <div class="dot-circle">2</div>
+      <div class="dot-label">เส้นรอบวง</div>
+    </div>
+    <div class="step-dot" data-step="3">
+      <div class="dot-circle">3</div>
+      <div class="dot-label">ความยาว</div>
+    </div>
+    <div class="step-dot" data-step="4">
+      <div class="dot-circle">4</div>
+      <div class="dot-label">พันธุ์</div>
+    </div>
+    <div class="step-dot" data-step="5">
+      <div class="dot-circle">5</div>
+      <div class="dot-label">ผล</div>
+    </div>
+  </div>
+
+  <!-- Form card -->
+  <div class="card" id="formCard">
+    <div class="card-title">
+      กรอกข้อมูลท่อนพันธุ์
+    </div>
+    <p class="card-desc">วัดและกรอกค่าทั้ง 4 รายการให้ครบก่อนกดคำนวณ</p>
+
+    <!-- Step 1: Weight -->
+    <div class="field">
+      <label>
+        <span class="step-badge" style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">1</span>
+        น้ำหนักท่อนพันธุ์ <span class="unit-hint">(กรัม)</span>
+      </label>
+      <input type="number" id="mass" min="0" step="0.1" placeholder="เช่น 250.5" oninput="updateSteps()">
+    </div>
+
+    <!-- Step 2: Circumference (mid only) -->
+    <div class="field">
+      <label>
+        <span class="step-badge" style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">2</span>
+        เส้นรอบวงบริเวณกลางท่อน <span class="unit-hint">(ซม.)</span>
+      </label>
+      <input type="number" id="circ_mid" min="0" step="0.1" placeholder="วัดตรงกลางท่อนพันธุ์" oninput="updateDerived(); updateSteps()">
+      <div class="derived-hint" id="hint_rm"></div>
+    </div>
+
+    <!-- Step 3: Length -->
+    <div class="field">
+      <label>
+        <span class="step-badge" style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">3</span>
+        ความยาวท่อนพันธุ์ <span class="unit-hint">(ซม.)</span>
+      </label>
+      <input type="number" id="length" min="0" step="0.1" placeholder="เช่น 25" oninput="updateSteps()">
+    </div>
+
+    <!-- Step 4: Variety -->
+    <div class="field">
+      <label>
+        <span class="step-badge" style="background:var(--stem);font-size:0.65rem;padding:2px 7px;border-radius:20px;color:#fff;margin-right:6px;">4</span>
+        เลือกพันธุ์
+      </label>
+      <div class="variety-grid">
+        <button class="variety-btn" onclick="selectVariety(this, 'เกษตรศาสตร์ 50')">
+          เกษตรศาสตร์ 50<span class="v-sub">KU50</span>
+        </button>
+        <button class="variety-btn" onclick="selectVariety(this, 'ห้านาที')">
+          ห้านาที<span class="v-sub">Ha Nathi</span>
+        </button>
+        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 72')">
+          ระยอง 72<span class="v-sub">Rayong 72</span>
+        </button>
+        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 5')">
+          ระยอง 5<span class="v-sub">Rayong 5</span>
+        </button>
+        <button class="variety-btn" onclick="selectVariety(this, 'ระยอง 9')">
+          ระยอง 9<span class="v-sub">Rayong 9</span>
+        </button>
+        <button class="variety-btn" onclick="selectVariety(this, 'พิรุณ 4')">
+          พิรุณ 4<span class="v-sub">Phirun 4</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-calc" id="calcBtn" onclick="calculate()" disabled>
+      คำนวณค่า VD
+    </button>
+  </div>
+
+  <!-- Grade legend -->
+  <div class="card" id="legendCard">
+    <div class="card-title">เกณฑ์การประเมินคุณภาพท่อนพันธุ์</div>
+    <div class="grade-legend-v2">
+
+      <div class="grade-row grade-row--good">
+        <div class="grade-icon">🌱</div>
+        <div class="grade-text">
+          <strong>คุณภาพดีมาก — ใช้ได้เลย</strong>
+          <span>งอกดี โตสม่ำเสมอทั้งแปลง</span>
+        </div>
+      </div>
+
+      <div class="grade-row grade-row--high">
+        <div class="grade-icon">💪</div>
+        <div class="grade-text">
+          <strong>คุณภาพดี — ใช้ได้</strong>
+          <span>ต้นจะโตสวยทั่วทั้งแปลง แต่ต้องบำรุงเพิ่มขึ้นนิดนึง</span>
+        </div>
+      </div>
+
+      <div class="grade-row grade-row--bad">
+        <div class="grade-icon">⚠️</div>
+        <div class="grade-text">
+          <strong>คุณภาพไม่ดี — ไม่แนะนำ</strong>
+          <span>งอกช้า โตช้า ผลผลิตไม่สม่ำเสมอ</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- Result section (replaces form) -->
+<div id="result">
+  <div class="result-hero" id="resultHero">
+    <div class="result-label">ค่าความหนาแน่นปริมาตร (VD)</div>
+    <div class="result-vd" id="resultVD">0.00<span class="result-unit">g/cm³</span></div>
+    <div class="result-grade-name" id="resultGrade">–</div>
+  </div>
+  <div class="result-body">
+    <div class="result-action" id="resultAction"></div>
+    <div class="calc-breakdown" id="calcBreakdown"></div>
+    <button class="btn-reset" onclick="resetForm()">ประเมินท่อนพันธุ์ใหม่</button>
+  </div>
+</div>
+
+<script>
+  let selectedVariety = '';
+
+  function selectVariety(btn, name) {
+    document.querySelectorAll('.variety-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedVariety = name;
+    updateSteps();
+  }
+
+  function updateDerived() {
+    const cm = parseFloat(document.getElementById('circ_mid').value);
+    const hm = document.getElementById('hint_rm');
+    if (!isNaN(cm) && cm > 0) {
+      hm.textContent = `→ r_mid = ${(cm / (2 * Math.PI)).toFixed(3)} ซม.`;
+    } else {
+      hm.textContent = '';
+    }
+  }
+
+  function allFilled() {
+    const m  = parseFloat(document.getElementById('mass').value);
+    const cm = parseFloat(document.getElementById('circ_mid').value);
+    const L  = parseFloat(document.getElementById('length').value);
+    return !isNaN(m) && m > 0 && !isNaN(cm) && cm > 0 && !isNaN(L) && L > 0 && selectedVariety !== '';
+  }
+
+  function updateSteps() {
+    const m  = parseFloat(document.getElementById('mass').value);
+    const cm = parseFloat(document.getElementById('circ_mid').value);
+    const L  = parseFloat(document.getElementById('length').value);
+
+    function mark(step, done) {
+      const el = document.querySelector(`.step-dot[data-step="${step}"]`);
+      if (!el) return;
+      el.classList.toggle('done', done);
+      el.classList.toggle('active', !done);
+    }
+
+    mark(1, !isNaN(m) && m > 0);
+    mark(2, !isNaN(cm) && cm > 0);
+    mark(3, !isNaN(L) && L > 0);
+    mark(4, selectedVariety !== '');
+
+    document.getElementById('calcBtn').disabled = !allFilled();
+  }
+
+  function calculate() {
+    const m  = parseFloat(document.getElementById('mass').value);
+    const cm = parseFloat(document.getElementById('circ_mid').value);
+    const L  = parseFloat(document.getElementById('length').value);
+    const variety = selectedVariety;
+
+    // Convert circumference → radius (cm)
+    const rm = cm / (2 * Math.PI);
+
+    // Volume of cylinder (cm³)
+    const V = Math.PI * rm * rm * L;
+
+    // VD = mass(g) / volume(cm³)
+    const VD = m / V;
+
+    // Grade — 3 tiers
+    let gradeClass, gradeName, action;
+    if (VD >= 0.60 && VD <= 0.89) {
+      gradeClass = 'grade-a';
+      gradeName  = '🌱 คุณภาพดีมาก — ใช้ได้เลย';
+      action = `<strong>ท่อนพันธุ์ ${variety} คุณภาพดีมาก</strong><br><br>✅ งอกดี โตสม่ำเสมอทั้งแปลง นำไปปลูกได้ทันที`;
+    } else if (VD > 0.89) {
+      gradeClass = 'grade-b';
+      gradeName  = '💪 คุณภาพดี — ใช้ได้';
+      action = `<strong>ท่อนพันธุ์ ${variety} คุณภาพดี</strong><br><br>✅ ใช้ได้ ต้นจะโตสวยทั่วทั้งแปลง แต่ต้องบำรุงเพิ่มขึ้นนิดนึง`;
+    } else {
+      gradeClass = 'grade-d';
+      gradeName  = '⚠️ คุณภาพไม่ดี — ไม่แนะนำ';
+      action = `<strong>ท่อนพันธุ์ ${variety} คุณภาพไม่ดี</strong><br><br>❌ งอกช้า โตช้า ผลผลิตไม่สม่ำเสมอ ควรคัดทิ้งและเลือกท่อนพันธุ์ใหม่`;
+    }
+
+    // Show result
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('legendCard').style.display = 'none';
+    document.getElementById('stepIndicator').style.display = 'none';
+
+    const resultEl = document.getElementById('result');
+    resultEl.style.display = 'block';
+
+    document.getElementById('resultVD').innerHTML = `${VD.toFixed(3)}<span class="result-unit"> g/cm³</span>`;
+    document.getElementById('resultGrade').textContent = gradeName;
+    document.getElementById('resultHero').className = `result-hero ${gradeClass}`;
+    document.getElementById('resultAction').innerHTML = action;
+
+    document.getElementById('calcBreakdown').innerHTML =
+      `<strong>รายละเอียดการคำนวณ</strong>\n` +
+      `พันธุ์        : ${variety}\n` +
+      `น้ำหนัก (m)   : ${m.toFixed(2)} g\n` +
+      `C_mid         : ${cm.toFixed(2)} cm  →  r_mid = ${rm.toFixed(4)} cm\n` +
+      `ความยาว (L)   : ${L.toFixed(2)} cm\n` +
+      `V = π × r²_mid × L\n` +
+      `V = π × ${rm.toFixed(4)}² × ${L.toFixed(2)} = ${V.toFixed(4)} cm³\n` +
+      `VD = ${m.toFixed(2)} / ${V.toFixed(4)} = <strong>${VD.toFixed(3)} g/cm³</strong>`;
+
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function resetForm() {
+    document.getElementById('mass').value = '';
+    document.getElementById('circ_mid').value = '';
+    document.getElementById('length').value = '';
+    document.getElementById('hint_rm').textContent = '';
+    document.querySelectorAll('.variety-btn').forEach(b => b.classList.remove('selected'));
+    selectedVariety = '';
+
+    document.querySelectorAll('.step-dot').forEach(d => {
+      d.classList.remove('done');
+      d.classList.add('active');
+    });
+
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('formCard').style.display = 'block';
+    document.getElementById('legendCard').style.display = 'block';
+    document.getElementById('stepIndicator').style.display = 'flex';
+    document.getElementById('calcBtn').disabled = true;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
