@@ -579,22 +579,19 @@
   <div class="result-hero" id="resultHero">
     <!-- Gauge SVG -->
     <div style="display:flex;justify-content:center;margin-bottom:4px;">
-      <svg id="gaugeSvg" width="240" height="136" viewBox="0 0 240 136">
-        <!-- track arc: red zone < 0.60 -->
-        <path id="arcBad"  d="" stroke="#B71C1C" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.35"/>
-        <!-- track arc: good zone 0.60-0.89 -->
-        <path id="arcGood" d="" stroke="#2E7D32" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.35"/>
-        <!-- track arc: high zone > 0.89 -->
-        <path id="arcHigh" d="" stroke="#1565C0" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.35"/>
-        <!-- active fill arc -->
-        <path id="arcFill" d="" stroke="#fff" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+      <svg id="gaugeSvg" width="280" height="160" viewBox="0 0 280 160">
+        <!-- track zones -->
+        <path id="arcBad"  d="" stroke="#ef5350" stroke-width="16" fill="none" stroke-linecap="butt" opacity="0.5"/>
+        <path id="arcGood" d="" stroke="#66bb6a" stroke-width="16" fill="none" stroke-linecap="butt" opacity="0.5"/>
+        <path id="arcHigh" d="" stroke="#42a5f5" stroke-width="16" fill="none" stroke-linecap="butt" opacity="0.5"/>
+        <!-- active fill -->
+        <path id="arcFill" d="" stroke="#fff" stroke-width="16" fill="none" stroke-linecap="butt" opacity="0.95"/>
+        <!-- tick marks & labels drawn by JS -->
+        <g id="ticks"></g>
         <!-- needle -->
-        <line id="gaugeNeedle" x1="120" y1="120" x2="120" y2="40" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
-        <circle cx="120" cy="120" r="6" fill="#fff" opacity="0.9"/>
-        <!-- zone labels -->
-        <text x="22"  y="120" text-anchor="middle" font-size="9" fill="#fff" opacity="0.7" font-family="sans-serif">&lt;0.60</text>
-        <text x="120" y="18"  text-anchor="middle" font-size="9" fill="#fff" opacity="0.7" font-family="sans-serif">0.60–0.89</text>
-        <text x="218" y="120" text-anchor="middle" font-size="9" fill="#fff" opacity="0.7" font-family="sans-serif">&gt;0.89</text>
+        <line id="gaugeNeedle" x1="140" y1="140" x2="140" y2="60" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="140" cy="140" r="7" fill="#fff" opacity="0.95"/>
+        <circle cx="140" cy="140" r="3" fill="#aaa"/>
       </svg>
     </div>
     <div class="result-label">ค่าความหนาแน่นปริมาตร (VD)</div>
@@ -711,39 +708,80 @@
     const s = polarToXY(cx, cy, r, startDeg);
     const e = polarToXY(cx, cy, r, endDeg);
     const large = (endDeg - startDeg) > 180 ? 1 : 0;
-    return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 1 ${e.x} ${e.y}`;
+    return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`;
   }
 
   function drawGauge(VD) {
-    const cx = 120, cy = 120, r = 88;
-    const startDeg = -160, endDeg = -20; // total sweep = 140°
-    const totalSweep = endDeg - startDeg; // 140
+    const cx = 140, cy = 140, r = 100;
+    const startDeg = -200, endDeg = 20;   // sweep = 220°, 0 → top, clockwise
+    const totalSweep = endDeg - startDeg; // 220
 
-    // Zone boundaries in VD: 0–0.60 bad, 0.60–0.89 good, 0.89–1.5 high
-    // Map VD 0–1.5 → angle
-    const minVD = 0, maxVD = 1.5;
+    const minVD = 0, maxVD = 1.6;
     function vdToAngle(v) {
       const clamped = Math.min(Math.max(v, minVD), maxVD);
       return startDeg + ((clamped - minVD) / (maxVD - minVD)) * totalSweep;
     }
 
-    const badEnd   = vdToAngle(0.60);
-    const goodEnd  = vdToAngle(0.89);
-    const trackEnd = endDeg;
-
+    // Zone arcs
+    const badEnd  = vdToAngle(0.60);
+    const goodEnd = vdToAngle(0.89);
     document.getElementById('arcBad').setAttribute('d',  arcPath(cx, cy, r, startDeg, badEnd));
     document.getElementById('arcGood').setAttribute('d', arcPath(cx, cy, r, badEnd, goodEnd));
-    document.getElementById('arcHigh').setAttribute('d', arcPath(cx, cy, r, goodEnd, trackEnd));
+    document.getElementById('arcHigh').setAttribute('d', arcPath(cx, cy, r, goodEnd, endDeg));
 
+    // Active fill up to VD
     const needleAngle = vdToAngle(VD);
-    const fillD = arcPath(cx, cy, r, startDeg, needleAngle);
-    document.getElementById('arcFill').setAttribute('d', fillD);
+    document.getElementById('arcFill').setAttribute('d', arcPath(cx, cy, r, startDeg, needleAngle));
 
-    // needle line
-    const tip = polarToXY(cx, cy, r - 20, needleAngle);
+    // Needle — tip on arc, base at pivot
+    const tip = polarToXY(cx, cy, r - 8, needleAngle);
     const needle = document.getElementById('gaugeNeedle');
-    needle.setAttribute('x2', tip.x);
-    needle.setAttribute('y2', tip.y);
+    needle.setAttribute('x1', cx);
+    needle.setAttribute('y1', cy);
+    needle.setAttribute('x2', tip.x.toFixed(2));
+    needle.setAttribute('y2', tip.y.toFixed(2));
+
+    // Tick marks & labels: 0, 0.2, 0.4 … 1.6
+    const ticksG = document.getElementById('ticks');
+    ticksG.innerHTML = '';
+    const ticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6];
+    ticks.forEach(v => {
+      const ang = vdToAngle(v);
+      const inner = polarToXY(cx, cy, r - 24);
+      const outer = polarToXY(cx, cy, r + 2);
+      const labelPt = polarToXY(cx, cy, r - 34);
+
+      // use angle via local fn
+      function pt(radius) {
+        const rad2 = (ang - 90) * Math.PI / 180;
+        return { x: cx + radius * Math.cos(rad2), y: cy + radius * Math.sin(rad2) };
+      }
+      const p1 = pt(r - 22);
+      const p2 = pt(r + 2);
+      const lp = pt(r - 36);
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', p1.x.toFixed(1));
+      line.setAttribute('y1', p1.y.toFixed(1));
+      line.setAttribute('x2', p2.x.toFixed(1));
+      line.setAttribute('y2', p2.y.toFixed(1));
+      line.setAttribute('stroke', '#fff');
+      line.setAttribute('stroke-width', v % 0.4 < 0.01 ? '2' : '1');
+      line.setAttribute('opacity', '0.7');
+      ticksG.appendChild(line);
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', lp.x.toFixed(1));
+      text.setAttribute('y', lp.y.toFixed(1));
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'middle');
+      text.setAttribute('font-size', '9');
+      text.setAttribute('fill', '#fff');
+      text.setAttribute('opacity', '0.85');
+      text.setAttribute('font-family', 'sans-serif');
+      text.textContent = v.toFixed(1);
+      ticksG.appendChild(text);
+    });
   }
 
   function calculate() {
